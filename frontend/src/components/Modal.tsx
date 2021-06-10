@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import {
-    Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Input, Label
+    Button,
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Form,
+    FormGroup,
+    Input,
+    Label
 } from "reactstrap";
 
 function CustomModal(props : any) {
@@ -8,6 +16,11 @@ function CustomModal(props : any) {
 
     const handleChange = (e : any) => {
         let { name, value } = e.target;
+
+        if (e.target.type === "checkbox") {
+          value = e.target.checked;
+        }
+
         const innerActiveItem = { ...activeItem, [name]: value };
         setActiveItem(innerActiveItem);
     }
@@ -40,6 +53,14 @@ function CustomModal(props : any) {
                             onChange={handleChange}
                             placeholder="Enter TODO description"
                         />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label form="todo-description">Priority</Label>
+                        <Input type="select" name="priority" id="todo-priority" onChange={handleChange} value={activeItem.priority}>
+                            <option value="High">High</option>
+                            <option value="Med">Medium</option>
+                            <option value="Low">Low</option>
+                        </Input>
                     </FormGroup>
                     <FormGroup check>
                         <Label check>

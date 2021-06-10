@@ -10,10 +10,15 @@ function App() {
   const [todoList, setTodoList] = useState<TodoItem[]>([]);
   const [modal, setModal] = useState(false);
   const [activeItem, setActiveItem] = useState<TodoItem>({ title: "", description: "", completed: false });
+  const [shouldRefresh, setShouldRefresh] = useState(true);
 
   useEffect(() => {
-    refreshList();
-  });
+    if (shouldRefresh) {
+      refreshList();
+      setShouldRefresh(false);
+    }
+
+  }, [shouldRefresh]);
 
   const refreshList = () =>{
     getTodoItems(setTodoList);

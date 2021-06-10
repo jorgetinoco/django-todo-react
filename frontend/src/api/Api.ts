@@ -21,7 +21,10 @@ const createTodoItem = (item : TodoItem, refreshFunction : any) => {
     axios
       .post("/api/todos/", item)
       .then((res) => refreshFunction())
-      .catch(err => console.error(err));
+      .catch(err => {
+          console.log(err);
+          console.error(err);
+      });
 }
 
 const deleteTodoItem = (item : TodoItem, refreshFunction : any) => {
