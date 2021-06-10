@@ -1,8 +1,16 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Modal from './components/Modal';
 
-const todoItems = [
+interface TodoItem {
+  id?: number,
+  title: string,
+  description: string,
+  completed: boolean
+}
+
+const todoItems : TodoItem[] = [
   {
     id: 1,
     title: "Go to Market",
@@ -33,9 +41,35 @@ const todoItems = [
 function App() {
   const [viewCompleted, setViewCompleted] = useState(false);
   const [todoList, setTodoList] = useState(todoItems);
+  const [modal, setModal] = useState(false);
+  const [activeItem, setActiveItem] = useState<TodoItem>({ title: "", description: "", completed: false })
 
   const displayCompleted = (status:boolean) => {
     setViewCompleted(status);
+  }
+
+  const toggle = () => setModal(!modal);
+
+  const handleSubmit = (item : TodoItem) => {
+    console.log(`handleSubmit item type: ${typeof item}`);
+    toggle();
+    alert(`save ${JSON.stringify(item)}`)
+  }
+
+  const deleteItem = (item : TodoItem) => {
+    console.log(`handleDelete item type: ${typeof item}`);
+    alert(`delete ${JSON.stringify(item)}`)
+  }
+
+  const createItem = () => {
+    const item : TodoItem = { title: "", completed: false, description: "" };
+    setActiveItem(item);
+    toggle();
+  }
+
+  const editItem = (item : TodoItem) => {
+    setActiveItem(item);
+    toggle();
   }
 
   const renderTabList = () => {
@@ -66,11 +100,13 @@ function App() {
               <span>
                 <button
                   className="btn btn-secondary mr-2"
+                  onClick={ () => editItem(item) }
                 >
                   Edit
                 </button>
                 <button
                   className="btn btn-danger"
+                  onClick={ () => deleteItem(item) }
                 >
                   Delete
                 </button>
@@ -88,6 +124,7 @@ function App() {
             <div className="mb-4">
               <button
                 className="btn btn-primary"
+                onClick={createItem}
               >
                 Add task
               </button>
@@ -99,6 +136,16 @@ function App() {
           </div>
         </div>
       </div>
+      {
+        modal ?
+            (<Modal
+                activeItem={activeItem}
+                toggle={toggle}
+                onSave={handleSubmit}
+            />)
+            :
+            null
+      }
     </main>
   );
 }
