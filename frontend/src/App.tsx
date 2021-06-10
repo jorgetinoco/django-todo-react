@@ -1,17 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import Modal from './components/Modal';
-import axios from "axios";
+import { getTodoItems, updateTodoItem, createTodoItem, deleteTodoItem } from './api/Api';
+import { TodoItem } from "./interfaces";
 
-axios.defaults.xsrfCookieName = "csrftoken";
-axios.defaults.xsrfHeaderName = "X-CSRFToken";
-
-interface TodoItem {
-  id?: number,
-  title: string,
-  description: string,
-  completed: boolean
-}
 
 function App() {
   const [viewCompleted, setViewCompleted] = useState(false);
@@ -24,10 +16,7 @@ function App() {
   });
 
   const refreshList = () =>{
-    axios
-        .get('/api/todos/')
-        .then(res => setTodoList(res.data))
-        .catch(err => console.error(err));
+    getTodoItems(setTodoList);
   }
 
   const displayCompleted = (status:boolean) => {
@@ -40,27 +29,14 @@ function App() {
     toggle();
 
     if (item.id) {
-      axios.put(`/api/todos/${item.id}/`,item)
-          .then(res => refreshList())
-          .catch(err => console.error(err));
+      updateTodoItem(item, refreshList);
       return;
     }
-
-    axios
-      .post("/api/todos/", item)
-      .then((res) => {
-        console.log(res);
-        refreshList()
-      })
-      .catch(err => console.error(err));
-
+    createTodoItem(item, refreshList);
   }
 
   const deleteItem = (item : TodoItem) => {
-    axios
-        .delete(`/api/todos/${item.id}/`)
-        .then((res) => refreshList())
-        .catch(err => console.error(err));
+    deleteTodoItem(item, refreshList);
   }
 
   const createItem = () => {
