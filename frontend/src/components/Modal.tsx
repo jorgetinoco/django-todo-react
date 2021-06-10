@@ -4,11 +4,9 @@ import {
 } from "reactstrap";
 
 function CustomModal(props : any) {
-    console.log(`Type of props: ${typeof props}`);
     const [activeItem, setActiveItem] = useState(props.activeItem);
 
     const handleChange = (e : any) => {
-        console.log(`Type of e: ${typeof e}`);
         let { name, value } = e.target;
         const innerActiveItem = { ...activeItem, [name]: value };
         setActiveItem(innerActiveItem);

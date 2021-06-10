@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import Modal from './components/Modal';
+import axios from "axios";
+
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 interface TodoItem {
   id?: number,
@@ -10,39 +13,22 @@ interface TodoItem {
   completed: boolean
 }
 
-const todoItems : TodoItem[] = [
-  {
-    id: 1,
-    title: "Go to Market",
-    description: "Buy ingredients to prepare dinner",
-    completed: true,
-  },
-  {
-    id: 2,
-    title: "Study",
-    description: "Read Algebra and History textbook for the upcoming test",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Sammy's books",
-    description: "Go to library to return Sammy's books",
-    completed: true,
-  },
-  {
-    id: 4,
-    title: "Article",
-    description: "Write article on how to use Django with React",
-    completed: false,
-  },
-];
-
-
 function App() {
   const [viewCompleted, setViewCompleted] = useState(false);
-  const [todoList, setTodoList] = useState(todoItems);
+  const [todoList, setTodoList] = useState<TodoItem[]>([]);
   const [modal, setModal] = useState(false);
-  const [activeItem, setActiveItem] = useState<TodoItem>({ title: "", description: "", completed: false })
+  const [activeItem, setActiveItem] = useState<TodoItem>({ title: "", description: "", completed: false });
+
+  useEffect(() => {
+    refreshList();
+  });
+
+  const refreshList = () =>{
+    axios
+        .get('/api/todos/')
+        .then(res => setTodoList(res.data))
+        .catch(err => console.error(err));
+  }
 
   const displayCompleted = (status:boolean) => {
     setViewCompleted(status);
@@ -51,14 +37,30 @@ function App() {
   const toggle = () => setModal(!modal);
 
   const handleSubmit = (item : TodoItem) => {
-    console.log(`handleSubmit item type: ${typeof item}`);
     toggle();
-    alert(`save ${JSON.stringify(item)}`)
+
+    if (item.id) {
+      axios.put(`/api/todos/${item.id}/`,item)
+          .then(res => refreshList())
+          .catch(err => console.error(err));
+      return;
+    }
+
+    axios
+      .post("/api/todos/", item)
+      .then((res) => {
+        console.log(res);
+        refreshList()
+      })
+      .catch(err => console.error(err));
+
   }
 
   const deleteItem = (item : TodoItem) => {
-    console.log(`handleDelete item type: ${typeof item}`);
-    alert(`delete ${JSON.stringify(item)}`)
+    axios
+        .delete(`/api/todos/${item.id}/`)
+        .then((res) => refreshList())
+        .catch(err => console.error(err));
   }
 
   const createItem = () => {
