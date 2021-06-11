@@ -4,5 +4,5 @@ export interface TodoItem {
   description: string,
   completed: boolean,
   priority?: string,
-  dueDate?: string
+  due_date?: Date
 }

@@ -10,8 +10,17 @@ import {
     Input,
     Label
 } from "reactstrap";
+import { TodoItem } from "../interfaces";
 
-function CustomModal(props : any) {
+const DatePicker = require('reactstrap-date-picker');
+
+interface Props {
+    activeItem: TodoItem,
+    toggle: any,
+    onSave: any
+}
+
+function CustomModal (props : Props) {
     const [activeItem, setActiveItem] = useState(props.activeItem);
 
     const handleChange = (e : any) => {
@@ -22,6 +31,11 @@ function CustomModal(props : any) {
         }
 
         const innerActiveItem = { ...activeItem, [name]: value };
+        setActiveItem(innerActiveItem);
+    }
+
+    const handleDateChange = (value : any, _ : any /* formatted date not used*/ ) => {
+        const innerActiveItem = { ...activeItem, 'due_date': value };
         setActiveItem(innerActiveItem);
     }
 
@@ -61,6 +75,14 @@ function CustomModal(props : any) {
                             <option value="Med">Medium</option>
                             <option value="Low">Low</option>
                         </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label form="todo-dueDate">Due Date</Label>
+                        <DatePicker
+                            id="todo-dueDate"
+                            value={activeItem.due_date}
+                            onChange={handleDateChange}
+                        />
                     </FormGroup>
                     <FormGroup check>
                         <Label check>
