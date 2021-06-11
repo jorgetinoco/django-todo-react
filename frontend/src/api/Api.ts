@@ -11,6 +11,17 @@ const getTodoItems = (setResult : any) => {
         .catch(err => console.error(err));
 }
 
+const getFilteredTodoItems = (filter : string, setResult : any) => {
+    if (!filter) {
+        getTodoItems(setResult);
+        return;
+    }
+
+    axios.get(`/api/todos/?search=${filter}`)
+        .then(res => setResult(res.data))
+        .catch(err => console.error(err));
+}
+
 const updateTodoItem = (item : TodoItem, refreshFunction : any) => {
     axios.put(`/api/todos/${item.id}/`,item)
           .then(res => refreshFunction())
@@ -38,5 +49,6 @@ export {
     getTodoItems,
     updateTodoItem,
     createTodoItem,
-    deleteTodoItem
+    deleteTodoItem,
+    getFilteredTodoItems
 }

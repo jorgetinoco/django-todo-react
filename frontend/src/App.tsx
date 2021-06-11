@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
-import Modal from './components/Modal';
-import { getTodoItems, updateTodoItem, createTodoItem, deleteTodoItem } from './api/Api';
+import { Modal, Search, EmptyLine } from './components'
+//import Modal from './components/Modal';
+// import Search from './components/Search';
+import { getTodoItems, updateTodoItem, createTodoItem, deleteTodoItem, getFilteredTodoItems } from './api/Api';
 import { TodoItem } from "./interfaces";
 
 
@@ -44,6 +46,10 @@ function App() {
     deleteTodoItem(item, refreshList);
   }
 
+  const handleSearch = (filter : string) => {
+    getFilteredTodoItems(filter, setTodoList);
+  }
+
   const createItem = () => {
     const item : TodoItem = { title: "", completed: false, description: "" };
     setActiveItem(item);
@@ -54,6 +60,8 @@ function App() {
     setActiveItem(item);
     toggle();
   }
+
+
 
   const renderTabList = () => {
     return (
@@ -98,9 +106,19 @@ function App() {
         ));
   }
 
+
+
   return (
     <main className="container">
       <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
+      <div className="row">
+        <div className="col-lg-4"/>
+        <div className="col-lg-4">
+          <Search onSearchFn={handleSearch} />
+        </div>
+        <div className="col-lg-4"/>
+      </div>
+      <EmptyLine />
       <div className="row">
         <div className="col-md-6 col-sm-10 mx-auto p-0">
           <div className="card p-3">
