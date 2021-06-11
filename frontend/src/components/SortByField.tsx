@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import {Button, Form, FormGroup, Input} from "reactstrap";
 
-function SortByField () {
+interface SortProps {
+    sortFn: any
+}
+
+function SortByField (props : SortProps) {
     const [sortField, setSortField] = useState('');
     const [sortAsc, setSortAsc] = useState('asc');
 
@@ -13,10 +17,6 @@ function SortByField () {
     const handleSortAscChange = (e : any) => {
         const { value } = e.target;
         setSortAsc(value);
-    }
-
-    const sortItems = () => {
-        console.log(`Sorting: ${sortField} - ${sortAsc}`);
     }
 
 
@@ -39,7 +39,7 @@ function SortByField () {
           <Button
               className="mb-2 mr-sm-2 mb-sm-0"
             color="success"
-            onClick={sortItems}
+            onClick={() => props.sortFn(sortField, sortAsc)}
           > Sort </Button>
         </Form>
     );

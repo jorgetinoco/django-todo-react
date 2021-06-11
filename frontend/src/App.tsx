@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Modal, Search, EmptyLine, SortByField} from './components'
-import { getTodoItems, updateTodoItem, createTodoItem, deleteTodoItem, getFilteredTodoItems } from './api/Api';
+import { getTodoItems, updateTodoItem, createTodoItem, deleteTodoItem } from './api/Api';
 import { TodoItem } from "./interfaces";
 
 
@@ -21,7 +21,7 @@ function App() {
   }, [shouldRefresh]);
 
   const refreshList = () =>{
-    getTodoItems(setTodoList);
+    getTodoItems({ setResult: setTodoList });
   }
 
   const displayCompleted = (status:boolean) => {
@@ -45,7 +45,7 @@ function App() {
   }
 
   const handleSearch = (filter : string) => {
-    getFilteredTodoItems(filter, setTodoList);
+    getTodoItems({ setResult: setTodoList, filter });
   }
 
   const createItem = () => {
@@ -59,7 +59,14 @@ function App() {
     toggle();
   }
 
+  const handleSortItems = (sortField : string, sortAsc : string) => {
+    console.log(`sortField ${sortField} sortAsc ${sortAsc}`);
+    if (!sortField || sortField === 'empty') return;
 
+    const sorting = `${(sortAsc === 'asc' ? '' : '-')}${sortField}`;
+
+    getTodoItems({ setResult: setTodoList, sort: sorting });
+  }
 
   const renderTabList = () => {
     return (
@@ -128,7 +135,7 @@ function App() {
                   </button>
                 </div>
                 <div className="col-lg-6">
-                  <SortByField />
+                  <SortByField sortFn={handleSortItems} />
                 </div>
               </div>
 

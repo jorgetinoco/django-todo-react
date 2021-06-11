@@ -4,21 +4,32 @@ import {TodoItem} from "../interfaces";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-const getTodoItems = (setResult : any) => {
-    axios
-        .get('/api/todos/')
-        .then(res => setResult(res.data))
-        .catch(err => console.error(err));
+interface ApiOperations {
+    setResult: any,
+    filter?: string,
+    sort?: string
 }
 
-const getFilteredTodoItems = (filter : string, setResult : any) => {
-    if (!filter) {
-        getTodoItems(setResult);
-        return;
+const getTodoItems = (operations : ApiOperations) => {
+    let filterQueryParam = '';
+    let sortQueryParam = '';
+
+    if (operations.filter) {
+        filterQueryParam = `?search=${operations.filter}`;
     }
 
-    axios.get(`/api/todos/?search=${filter}`)
-        .then(res => setResult(res.data))
+    if (operations.sort) {
+        let starting = '&';
+        if (!filterQueryParam) {
+            starting = '?'
+        }
+        sortQueryParam = `${starting}ordering=${operations.sort}`;
+
+    }
+
+    axios
+        .get(`/api/todos/${filterQueryParam}${sortQueryParam}`)
+        .then(res => operations.setResult(res.data))
         .catch(err => console.error(err));
 }
 
@@ -49,6 +60,5 @@ export {
     getTodoItems,
     updateTodoItem,
     createTodoItem,
-    deleteTodoItem,
-    getFilteredTodoItems
+    deleteTodoItem
 }
