@@ -10,4 +10,5 @@ class TodoView(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
     search_fields = ["title"]
-    filter_backends = (filters.SearchFilter,)
+    ordering_fields = ["title", "priority", "due_date"]
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
