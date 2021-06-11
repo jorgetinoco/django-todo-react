@@ -19,7 +19,7 @@ class Todo(models.Model):
     description = models.TextField()
     completed = models.BooleanField(default=False)
     priority = models.TextField(choices=Priority.choices, default=Priority.LOW)
-    due_date = models.DateTimeField(auto_now_add=True, blank=True)
+    due_date = models.DateTimeField(blank=True)
 
     def __str__(self):
         return self.title
