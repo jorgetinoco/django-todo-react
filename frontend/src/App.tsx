@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
-import { Modal, Search, EmptyLine } from './components'
-//import Modal from './components/Modal';
-// import Search from './components/Search';
+import {Modal, Search, EmptyLine, SortByField} from './components'
 import { getTodoItems, updateTodoItem, createTodoItem, deleteTodoItem, getFilteredTodoItems } from './api/Api';
 import { TodoItem } from "./interfaces";
 
@@ -106,8 +104,6 @@ function App() {
         ));
   }
 
-
-
   return (
     <main className="container">
       <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
@@ -123,12 +119,19 @@ function App() {
         <div className="col-md-6 col-sm-10 mx-auto p-0">
           <div className="card p-3">
             <div className="mb-4">
-              <button
-                className="btn btn-primary"
-                onClick={createItem}
-              >
-                Add task
-              </button>
+              <div className="row">
+                <div className="col-lg-6">
+                  <button
+                    className="btn btn-primary"
+                    onClick={createItem}>
+                    Add task
+                  </button>
+                </div>
+                <div className="col-lg-6">
+                  <SortByField />
+                </div>
+              </div>
+
             </div>
             {renderTabList()}
             <ul className="list-group list-group-flush border-top-0">
