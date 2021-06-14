@@ -6,3 +6,12 @@ export interface TodoItem {
   priority?: string,
   due_date?: Date
 }
+
+export interface Pagination {
+  current: number,
+  count?: number,
+  next?: number,
+  prev?: number,
+  filter?: string,
+  sort?: string
+}

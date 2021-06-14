@@ -2,15 +2,24 @@ import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Modal, Search, EmptyLine, SortByField} from './components'
 import { getTodoItems, updateTodoItem, createTodoItem, deleteTodoItem } from './api/Api';
-import { TodoItem } from "./interfaces";
+import {Pagination, TodoItem} from "./interfaces";
 
 
 function App() {
   const [viewCompleted, setViewCompleted] = useState(false);
   const [todoList, setTodoList] = useState<TodoItem[]>([]);
   const [modal, setModal] = useState(false);
+  const [filter, setFilter] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [sort, setSorting] = useState('');
+  const [sortAsc, setSortAsc] = useState('asc');
   const [activeItem, setActiveItem] = useState<TodoItem>({ title: "", description: "", completed: false });
   const [shouldRefresh, setShouldRefresh] = useState(true);
+  const [pagination, setPagination] = useState<Pagination>({ current: 1 });
+
+  const refreshList = () =>{
+    getTodoItems({ setResult: setTodoList, setPagination  });
+  }
 
   useEffect(() => {
     if (shouldRefresh) {
@@ -20,15 +29,9 @@ function App() {
 
   }, [shouldRefresh]);
 
-  const refreshList = () =>{
-    getTodoItems({ setResult: setTodoList });
-  }
-
-  const displayCompleted = (status:boolean) => {
-    setViewCompleted(status);
-  }
-
-  const toggle = () => setModal(!modal);
+  /*
+  * Button Handlers
+  * */
 
   const handleSubmit = (item : TodoItem) => {
     toggle();
@@ -40,12 +43,36 @@ function App() {
     createTodoItem(item, refreshList);
   }
 
-  const deleteItem = (item : TodoItem) => {
-    deleteTodoItem(item, refreshList);
+  const handleSearch = () => {
+    getTodoItems({ filter, setResult: setTodoList, setPagination, sort });
   }
 
-  const handleSearch = (filter : string) => {
-    getTodoItems({ setResult: setTodoList, filter });
+  const handleSortItems = () => {
+    if (!sortField || sortField === 'empty') return;
+    const sorting = `${(sortAsc === 'asc' ? '' : '-')}${sortField}`;
+    setSorting(sorting);
+
+    getTodoItems({ sort, setResult: setTodoList, setPagination, filter });
+  }
+
+  const handlePageChange = (e : any) => {
+     let { name } = e.target;
+     const page = name.split('-')[1];
+    getTodoItems({ setResult: setTodoList, setPagination, filter, page, sort  });
+  }
+
+  const handleCompletedChange = (status:boolean) => {
+    setViewCompleted(status);
+  }
+
+  const toggle = () => setModal(!modal);
+
+
+  /**
+   * CRUD Operations
+   */
+  const deleteItem = (item : TodoItem) => {
+    deleteTodoItem(item, refreshList);
   }
 
   const createItem = () => {
@@ -59,27 +86,23 @@ function App() {
     toggle();
   }
 
-  const handleSortItems = (sortField : string, sortAsc : string) => {
-    console.log(`sortField ${sortField} sortAsc ${sortAsc}`);
-    if (!sortField || sortField === 'empty') return;
 
-    const sorting = `${(sortAsc === 'asc' ? '' : '-')}${sortField}`;
-
-    getTodoItems({ setResult: setTodoList, sort: sorting });
-  }
+  /**
+   * Render Functions
+   */
 
   const renderTabList = () => {
     return (
         <div className="nav nav-tabs">
           <span
               className={viewCompleted ? "nav-link active" : "nav-link"}
-              onClick={() => displayCompleted(true)}>
+              onClick={() => handleCompletedChange(true)}>
             Complete
           </span>
 
           <span
               className={viewCompleted ? "nav-link": "nav-link active"}
-              onClick={() => displayCompleted(false)}>
+              onClick={() => handleCompletedChange(false)}>
             Incomplete
           </span>
         </div>
@@ -111,13 +134,31 @@ function App() {
         ));
   }
 
+  const renderPagination = () => {
+
+    const totalPages = Math.floor((pagination.count ? pagination.count : 0) / 3);
+    const rows : JSX.Element[] = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+      rows.push(<li className="page-item"><button className="page-link" onClick={handlePageChange} name={`page-${i}`} id={`page-${i}`} key={`page-${i}`}>{i}</button></li>);
+    }
+
+    return (
+        <nav aria-label="items pagination">
+          <ul className="pagination pagination-sm justify-content-end">
+            {rows}
+          </ul>
+        </nav>
+    );
+  }
+
   return (
     <main className="container">
       <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
       <div className="row">
         <div className="col-lg-4"/>
         <div className="col-lg-4">
-          <Search onSearchFn={handleSearch} />
+          <Search onSearchFn={handleSearch} filter={filter} setFilter={setFilter} />
         </div>
         <div className="col-lg-4"/>
       </div>
@@ -135,7 +176,7 @@ function App() {
                   </button>
                 </div>
                 <div className="col-lg-6">
-                  <SortByField sortFn={handleSortItems} />
+                  <SortByField sortFn={handleSortItems} setSortField={setSortField} sortField={sortField} setSortAsc={setSortAsc} sortAsc={sortAsc} />
                 </div>
               </div>
 
@@ -144,6 +185,7 @@ function App() {
             <ul className="list-group list-group-flush border-top-0">
               {renderItems()}
             </ul>
+            {renderPagination()}
           </div>
         </div>
       </div>
