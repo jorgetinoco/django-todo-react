@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface SearchProps {
-    onSearchFn: any,
+    onSearchFn: (x:string) => void,
     setFilter: any,
     filter: string
 }
@@ -9,7 +9,7 @@ interface SearchProps {
 function Search (props : SearchProps) {
 
     const handleOnChange = (e : any) => {
-        let { value } = e.target;
+        const { target: { value } } = e;
         props.setFilter(value);
     }
 

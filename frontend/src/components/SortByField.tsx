@@ -12,7 +12,7 @@ interface SortProps {
 function SortByField (props : SortProps) {
 
     const handleSortFieldChange = (e : any) => {
-        const { value } = e.target;
+        const { target : { value } } = e;
         props.setSortField(value);
     }
 
